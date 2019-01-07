@@ -85,6 +85,25 @@ Valid starting       Expires              Service principal
 07.01.2019 12:21:42  08.01.2019 12:21:42  krbtgt/HADOOP.COM.REALM@HADOOP.COM.REALM
 	renew until 07.01.2019 12:21:42
 ```
+Prepare quest keytab
+> kadmin -p admin/admin  (password admin)<br>
+> ktadd -k guest.keytab  guest@HADOOP.COM.REALM
+```
+Entry for principal guest@HADOOP.COM.REALM with kvno 2, encryption type aes256-cts-hmac-sha1-96 added to keytab WRFILE:guest.keytab.
+Entry for principal guest@HADOOP.COM.REALM with kvno 2, encryption type aes128-cts-hmac-sha1-96 added to keytab WRFILE:guest.keytab.
+kadmin: 
+```
+Authorize with keytab, preferred, avoid the password being passed over network
+> kinit -kt guest.keytab guest<br>
+> klist
+```
+Ticket cache: KEYRING:persistent:1001:1001
+Default principal: guest@HADOOP.COM.REALM
+
+Valid starting       Expires              Service principal
+07.01.2019 12:47:53  08.01.2019 12:47:53  krbtgt/HADOOP.COM.REALM@HADOOP.COM.REALM
+	renew until 07.01.2019 12:47:53
+```
 
 
 
