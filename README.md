@@ -33,7 +33,7 @@ The container can be customized by a number of environment variables
 | KERB_ADMIN_USER | Administrator account name  | admin
 | KERB_ADMIN_PASS | Administrator password | admin
 
-Example, custom realm name
+Example, a custom realm name
 
  > docker run -d  --name kerberos  -p 749:749 -p 88:88  -e REALM=HADOOP.COM.REALM ubuntu-kerberos
  
@@ -65,7 +65,7 @@ kiprop/21528069223e@HADOOP.COM.REALM
 krbtgt/HADOOP.COM.REALM@HADOOP.COM.REALM
 kadmin:  
  ```
- Add user
+ Add user guest
  > kadmin:  addprinc guest
  ```
 WARNING: no policy specified for guest@HADOOP.COM.REALM; defaulting to no policy
