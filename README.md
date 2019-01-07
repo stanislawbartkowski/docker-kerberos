@@ -85,7 +85,7 @@ Valid starting       Expires              Service principal
 07.01.2019 12:21:42  08.01.2019 12:21:42  krbtgt/HADOOP.COM.REALM@HADOOP.COM.REALM
 	renew until 07.01.2019 12:21:42
 ```
-Prepare quest keytab
+Prepare guest keytab
 > kadmin -p admin/admin  (password admin)<br>
 > ktadd -k guest.keytab  guest@HADOOP.COM.REALM
 ```
