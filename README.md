@@ -6,8 +6,8 @@ I was using this dockerized Kerberos image but I decided to prepare my own versi
 
 # Image creation
 
-> git clone https://github.com/stanislawbartkowski/docker-kerberos.git
-> cd docker-kerberos/
+> git clone https://github.com/stanislawbartkowski/docker-kerberos.git <br>
+> cd docker-kerberos/ <br>
 > docker build -t ubuntu-kerberos .
 
 # Running
