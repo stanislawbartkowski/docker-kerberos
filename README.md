@@ -35,7 +35,56 @@ The container can be customized by a number of environment variables
 
 Example, custom realm name
 
- > docker run -d  -name  -p 749:749 -p 88:88  -e REALM=HADOOP.COM.REALM kerberos ubuntu-kerberos
+ > docker run -d  --name kerberos  -p 749:749 -p 88:88  -e REALM=HADOOP.COM.REALM ubuntu-kerberos
+ 
+ ## Test
+ 
+ Customize your Kerberos client
+ 
+ > vi vi /etc/krb5.conf
+ 
+  ```
+  ...
+  default_realm = HADOOP.COM.REALM
+  ...
+ HADOOP.COM.REALM = {
+  kdc = localhost
+  admin_server = localhost
+}
+ ```
+ > kadmin -p admin/admin  (password admin)<br>
+ > listprincs
+ ```
+ kadmin:  listprincs
+K/M@HADOOP.COM.REALM
+admin/admin@HADOOP.COM.REALM
+kadmin/21528069223e@HADOOP.COM.REALM
+kadmin/admin@HADOOP.COM.REALM
+kadmin/changepw@HADOOP.COM.REALM
+kiprop/21528069223e@HADOOP.COM.REALM
+krbtgt/HADOOP.COM.REALM@HADOOP.COM.REALM
+kadmin:  
+ ```
+ Add user
+ > kadmin:  addprinc guest
+ ```
+WARNING: no policy specified for guest@HADOOP.COM.REALM; defaulting to no policy
+Enter password for principal "guest@HADOOP.COM.REALM": 
+```
+Authorize as guest
+> kinit guest
+```
+Password for guest@HADOOP.COM.REALM: 
+```
+>klist
+```
+Ticket cache: KEYRING:persistent:1001:1001
+Default principal: guest@HADOOP.COM.REALM
+
+Valid starting       Expires              Service principal
+07.01.2019 12:21:42  08.01.2019 12:21:42  krbtgt/HADOOP.COM.REALM@HADOOP.COM.REALM
+	renew until 07.01.2019 12:21:42
+```
 
 
 
