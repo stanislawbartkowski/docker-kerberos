@@ -54,7 +54,7 @@ Example, a custom realm name
  ```
  > kadmin -p admin/admin  (password admin)<br>
  
-Important: in order to run *kadmin* from remote machine, the Kerberos realm (here HADOOP.COM.REALM) should a default KDC in remote */etc/krb5.conf* machine. Otherwise, after entering the password *kadmin* utility will hang.
+Important: in order to run *kadmin* from remote machine, the Kerberos realm (here HADOOP.COM.REALM) should be configured as a default KDC on the client */etc/krb5.conf* file. Otherwise, after entering the password, the *kadmin* utility will hang.
  > listprincs
  ```
  kadmin:  listprincs
