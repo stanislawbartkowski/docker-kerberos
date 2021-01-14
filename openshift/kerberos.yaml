@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kerberos
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kerberos
+  template:
+    metadata:
+      labels:
+        app: kerberos
+    spec:
+      serviceAccount: uuid-sa
+      containers:
+      - name: kerberos
+        image: quay.io/stanislawbartkowski/kerberos:v1.0
+        ports:
+        - containerPort: 1088
+          containerPort: 1749
+        env:
+        - name: KERB_ADMIN_PORT
+          value: "1749"
+        - name: KERB_KDC_PORT
+          value : "1088"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: kerberos
+    name: kerberosadm
+  name: kerberosadm
+spec:
+  type: NodePort
+  ports:  
+  - port: 1749
+    protocol: TCP
+  selector:
+    app: kerberos
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: kerberos
+    name: kerberoskdc
+  name: kerberoskdc
+spec:
+  type: NodePort
+  ports:
+  - port: 1088
+    protocol: TCP
+  selector:
+    app: kerberos
