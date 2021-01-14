@@ -2,19 +2,19 @@
 
 https://github.com/sequenceiq/docker-kerberos
 
-I created my own version of dockerized Kerberos. 
+I created my own version of dockerized Kerberos adapted to *podman*. The main feature is configurable port. Podman is usually executed as non-root user and complains on ports below 1000.
 
 # Image creation
 
 > git clone https://github.com/stanislawbartkowski/docker-kerberos.git <br>
 > cd docker-kerberos/ <br>
-> docker build -t ubuntu-kerberos .
+> docker build -t kerberos .
 
 # Running
 
 ## Quick start 
 
-> docker run -d --name kerberos -p 749:749 -p 88:88 ubuntu-kerberos
+> docker run -d --name kerberos -p 749:749 -p 88:88 -kerberos
 
 ```bash
 $ docker ps
@@ -32,17 +32,22 @@ The container can be customized by a number of environment variables
 | KERB_MASTER_KEY | Master key for KDC | topsecret |
 | KERB_ADMIN_USER | Administrator account name  | admin
 | KERB_ADMIN_PASS | Administrator password | admin
-| 
+| KERB_ADMIN_PORT | Kerberos Admin server port | 749
+| KERB_KDC_PORT | Kerberos KDC port | 88
+| KERB_MAX_RENEWABLE | Max renewable period for Kerbers tickets | 7d
 
 Example, a custom realm name
 
- > docker run -d  --name kerberos  -p 749:749 -p 88:88  -e REALM=HADOOP.COM.REALM ubuntu-kerberos
+ > docker run -d  --name kerberos  -p 749:749 -p 88:88  -e REALM=HADOOP.COM.REALM kerberos
  
  For podman, usually executed as non-root user, redirect the port numbers above 1000.
  
  > podman run -d --name kerberos -p 1749:749 -p 1088:88 kerberos
  
- ## Test
+ Port reconfiguration.<br>
+ >  podman run -d --name kerberos -e KERB_ADMIN_PORT=1749 -e KERB_KDC_PORT=1088 -p 1749:1749 -p 1088:1088 kerberos<br>
+ 
+  ## Test
  
  Customize your Kerberos client
  
@@ -70,6 +75,7 @@ Example, a custom realm name
  > kadmin -p admin/admin  (password admin)<br>
  
 Important: in order to run *kadmin* from remote machine, the Kerberos realm (here HADOOP.COM.REALM) should be configured as a default KDC on the client */etc/krb5.conf* file. Otherwise, after entering the password, the *kadmin* utility will hang.
+
  > listprincs
  ```
  kadmin:  listprincs
@@ -121,7 +127,3 @@ Valid starting       Expires              Service principal
 07.01.2019 12:47:53  08.01.2019 12:47:53  krbtgt/HADOOP.COM.REALM@HADOOP.COM.REALM
 	renew until 07.01.2019 12:47:53
 ```
-
-
-
-
