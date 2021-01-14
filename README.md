@@ -2,7 +2,7 @@
 
 https://github.com/sequenceiq/docker-kerberos
 
-I was using this dockerized Kerberos image but I decided to prepare my own version based on Ubuntu. The Ubuntu has smaller footprint, 650 MB Centos against 230 MB Ubuntu version (160MB + 70MB). The sequenceid/kerberos is also using the old version of Centos (6.6).
+I created my own version of dockerized Kerberos. 
 
 # Image creation
 
@@ -32,6 +32,7 @@ The container can be customized by a number of environment variables
 | KERB_MASTER_KEY | Master key for KDC | topsecret |
 | KERB_ADMIN_USER | Administrator account name  | admin
 | KERB_ADMIN_PASS | Administrator password | admin
+| 
 
 Example, a custom realm name
 
