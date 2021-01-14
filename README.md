@@ -34,7 +34,7 @@ The container can be customized by several environment variables
 | KERB_ADMIN_PASS | Administrator password | admin
 | KERB_ADMIN_PORT | Kerberos Admin server port | 749
 | KERB_KDC_PORT | Kerberos KDC port | 88
-| KERB_MAX_RENEWABLE | Max renewable period for Kerbers tickets | 7d
+| KERB_MAX_RENEWABLE | Max renewable period for Kerberos tickets | 7d
 
 Example, a custom realm name
 
