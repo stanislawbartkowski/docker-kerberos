@@ -37,6 +37,10 @@ Example, a custom realm name
 
  > docker run -d  --name kerberos  -p 749:749 -p 88:88  -e REALM=HADOOP.COM.REALM ubuntu-kerberos
  
+ For podman, usually executed as non-root user, redirect the port numbers above 10000.
+ 
+ > podman run -d --name kerberos -p 1749:749 -p 1088:88 kerberos
+ 
  ## Test
  
  Customize your Kerberos client
@@ -52,6 +56,16 @@ Example, a custom realm name
   admin_server = localhost
 }
  ```
+ 
+ If non-standard ports are used, include port numbers.<br>
+ ```
+ EXAMPLE.COM = {
+     kdc = thinkde:1088
+     admin_server = thinkde:1749
+}
+
+```
+ 
  > kadmin -p admin/admin  (password admin)<br>
  
 Important: in order to run *kadmin* from remote machine, the Kerberos realm (here HADOOP.COM.REALM) should be configured as a default KDC on the client */etc/krb5.conf* file. Otherwise, after entering the password, the *kadmin* utility will hang.
