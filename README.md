@@ -1,7 +1,5 @@
 # docker-kerberos
 
-https://github.com/sequenceiq/docker-kerberos
-
 I created my version of dockerized Kerberos adapted to *podman*. The main feature is the configurable ports. Podman is usually executed as a non-root user and complains about ports below 1000. To use podman, replace all *docker* occurences with *podman*.
 
 # Image creation
