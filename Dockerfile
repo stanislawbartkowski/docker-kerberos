@@ -1,11 +1,9 @@
-FROM ubuntu
-MAINTAINER sb
+FROM centos:7
+LABEL maintainer=<stanislawbartkowski@gmail.com>
 
-RUN apt-get update 
-RUN apt-get upgrade -y
-RUN export DEBIAN_FRONTEND=noninteractive ; apt-get install krb5-kdc krb5-admin-server -y
+RUN yum install -y krb5-kdc krb5-server krb5-workstation
 
-EXPOSE 88 749
+# EXPOSE 88 749
 
 ADD ./main.sh /main.sh
 
