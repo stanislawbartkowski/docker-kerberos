@@ -37,7 +37,7 @@ Example, a custom realm name
 
  > docker run -d  --name kerberos  -p 749:749 -p 88:88  -e REALM=HADOOP.COM.REALM ubuntu-kerberos
  
- For podman, usually executed as non-root user, redirect the port numbers above 10000.
+ For podman, usually executed as non-root user, redirect the port numbers above 1000.
  
  > podman run -d --name kerberos -p 1749:749 -p 1088:88 kerberos
  
