@@ -127,3 +127,140 @@ Valid starting       Expires              Service principal
 07.01.2019 12:47:53  08.01.2019 12:47:53  krbtgt/HADOOP.COM.REALM@HADOOP.COM.REALM
 	renew until 07.01.2019 12:47:53
 ```
+# Kubernetes/OpenShift
+
+Containerized Kerberos can be deployed to OpenShift or Kubernetes cluser. A sample *kerberos.yaml* deployment file is attached.<br>
+https://github.com/stanislawbartkowski/docker-kerberos/blob/master/openshift/kerberos.yaml<br>
+
+Important: the Kerberos container is using ephemeral storage. Every time the contaner is recreated or deleted, the content is erased without any possibility to recover. Do not use in production environment.
+
+## Make public
+
+Make Kerberos image public, being accessible from OpenShift cluster.<br>
+
+> podman tag keberos quay.io/stanislawbartkowski/kerberos:v1.0<br>
+> podman login quay.io<br>
+> podman push quay.io/stanislawbartkowski/kerberos:v1.0<br>
+
+## anyuid ServiceAccount
+
+Kerberos services inside the container are started as *root* user. The deployment should be managed by ServiceAccount with *anyuid* RBAC privilege. In the sample deployment, *uuid-as* service account is used.<br>
+
+## Deploy the service
+
+> cd openshift<br>
+> oc create -f kerberos.yaml<br>
+
+>  oc get pods<br>
+```
+NAME                        READY   STATUS    RESTARTS   AGE
+kerberos-54649c4c5b-gn86f   1/1     Running   0          31m
+```
+
+## Expose the service 
+
+In the sample deployment, NodeIP service port is used.
+```
+oc get svc
+NAME          TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+kerberosadm   NodePort   172.30.197.73   <none>        1749:32275/TCP   32m
+kerberoskdc   NodePort   172.30.53.179   <none>        1088:31476/TCP   32m
+```
+OpenShift assigns random ports from range 30000-32767. Another deployment can select different ports.<br>
+
+On gateway node where HaProxy is installed, modify */etc/haproxy/haproxy.cfg* adding appropriate entries. In this example, OpenShift Master Node are referenced and related service ports are redirected.
+```
+frontend kerberoskdc-tcp
+        bind *:31476
+        default_backend kerberoskdc-tcp
+        mode tcp
+        option tcplog
+
+backend kerberoskdc-tcp
+        balance source
+        mode tcp
+        server master0 10.16.40.242:31476 check
+        server master1 10.16.40.243:31476 check
+        server master2 10.16.40.249:31476 check
+
+frontend kerberosadm-tcp
+        bind *:32275
+        default_backend kerberosadm-tcp
+        mode tcp
+        option tcplog
+
+backend kerberosadm-tcp
+        balance source
+        mode tcp
+        server master0 10.16.40.242:32275 check
+        server master1 10.16.40.243:32275 check
+        server master2 10.16.40.249:32275 check
+```
+Restart HAProxy.<br>
+
+> systemctl restart haproxy<br>
+
+Make sure that ports are redirected.<br>
+<br>
+>nc -zv localhost 32275<br>
+```
+Ncat: Version 7.50 ( https://nmap.org/ncat )
+Ncat: Connected to 127.0.0.1:32275.
+Ncat: 0 bytes sent, 0 bytes received in 0.01 seconds.
+```
+## Configure client workstation
+
+Assuming HAProxy hostname *shrieker-inf*.
+
+```
+...
+default_realm = EXAMPLE.COM
+...
+
+EXAMPLE.COM = {
+      kdc = shrieker-inf:31476
+      admin_server = shrieker-inf:32275
+}
+....
+
+```
+> kadmin -p admin/admin
+```
+Connection to shrieker-inf closed.
+sbartkowski:Pulpit$ vi /etc/krb5.conf
+sbartkowski:Pulpit$ kadmin -p admin/admin
+Couldn't open log file /var/log/kadmind.log: Permission denied
+Authenticating as principal admin/admin with password.
+Password for admin/admin@EXAMPLE.COM: 
+
+addprinc guest
+```
+> kinit guest<br>
+```
+Password for guest@EXAMPLE.COM: 
+sbartkowski:Pulpit$ klist
+Ticket cache: KCM:1001
+Default principal: guest@EXAMPLE.COM
+
+Valid starting       Expires              Service principal
+14.01.2021 18:37:40  15.01.2021 18:37:40  krbtgt/EXAMPLE.COM@EXAMPLE.COM
+	renew until 21.01.2021 18:37:40
+```
+# Expose using OpenShift routes
+
+> oc expose service/kerberosadm<br>
+```
+route.route.openshift.io/kerberosadm exposed
+```
+
+> oc expose service/kerberoskdc<br>
+```
+route.route.openshift.io/kerberoskdc exposed
+```
+
+> oc get routes<br>
+```
+NAME          HOST/PORT                                      PATH   SERVICES      PORT   TERMINATION   WILDCARD
+kerberosadm   kerberosadm-sb.apps.shrieker.os.fyre.ibm.com          kerberosadm   1749                 None
+kerberoskdc   kerberoskdc-sb.apps.shrieker.os.fyre.ibm.com          kerberoskdc   1088                 None
+```
