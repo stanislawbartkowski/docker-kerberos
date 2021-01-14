@@ -2,7 +2,7 @@
 
 https://github.com/sequenceiq/docker-kerberos
 
-I created my own version of dockerized Kerberos adapted to *podman*. The main feature is configurable port. Podman is usually executed as non-root user and complains on ports below 1000.
+I created my version of dockerized Kerberos adapted to *podman*. The main feature is the configurable ports. Podman is usually executed as a non-root user and complains about ports below 1000.
 
 # Image creation
 
@@ -23,7 +23,7 @@ CONTAINER ID        IMAGE               COMMAND             CREATED             
 24afe18eb548        ubuntu-kerberos     "/main.sh"          4 seconds ago       Up 2 seconds        0.0.0.0:88->88/tcp, 0.0.0.0:749->749/tcp   kerberos
 
 ```
-The container can be customized by a number of environment variables
+The container can be customized by several environment variables
 
 | Variable | Description | Default
 |----|-----|-----|
@@ -40,7 +40,7 @@ Example, a custom realm name
 
  > docker run -d  --name kerberos  -p 749:749 -p 88:88  -e REALM=HADOOP.COM.REALM kerberos
  
- For podman, usually executed as non-root user, redirect the port numbers above 1000.
+ For podman, usually executed as a non-root user, redirect the port numbers above 1000.
  
  > podman run -d --name kerberos -p 1749:749 -p 1088:88 kerberos
  
@@ -74,7 +74,7 @@ Example, a custom realm name
  
  > kadmin -p admin/admin  (password admin)<br>
  
-Important: in order to run *kadmin* from remote machine, the Kerberos realm (here HADOOP.COM.REALM) should be configured as a default KDC on the client */etc/krb5.conf* file. Otherwise, after entering the password, the *kadmin* utility will hang.
+Important: to run *kadmin* from a remote machine, the Kerberos realm (here HADOOP.COM.REALM) should be configured as a default KDC on the client */etc/krb5.conf* file. Otherwise, after entering the password, the *kadmin* utility will hang.
 
  > listprincs
  ```
@@ -129,10 +129,10 @@ Valid starting       Expires              Service principal
 ```
 # Kubernetes/OpenShift
 
-Containerized Kerberos can be deployed to OpenShift or Kubernetes cluser. A sample *kerberos.yaml* deployment file is attached.<br>
+Containerized Kerberos can be deployed to OpenShift or Kubernetes cluster. A sample *kerberos.yaml* deployment file is attached.<br>
 https://github.com/stanislawbartkowski/docker-kerberos/blob/master/openshift/kerberos.yaml<br>
 
-Important: the Kerberos container is using ephemeral storage. Every time the contaner is recreated or deleted, the content is erased without any possibility to recover. Do not use in production environment.
+Important: the Kerberos container is using ephemeral storage. Every time the container is recreated or deleted, the content is erased without any possibility to recover. Do not use in a production environment.
 
 ## Make public
 
